@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_list/models/todo_item.dart';
+import 'package:todo_list/models/list_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       // await Future.delayed(const Duration(seconds: 3), () {});
 
       final response =
-          await _dio.get('https://jsonplaceholder.typicode.com/todos');
+          await _dio.get('https://jsonplaceholder.typicode.com/albums');
       debugPrint(response.data.toString());
       // parse
       List list = jsonDecode(response.data.toString());
@@ -67,24 +67,59 @@ class _HomePageState extends State<HomePage> {
     } else if (_itemList == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
-      body = ListView.builder(
-          itemCount: _itemList!.length,
-          itemBuilder: (context, index) {
-            var todoItem = _itemList![index];
-            return Card(
-                child: Padding(
+      body = Column(
+        children: [
+          Text(
+            "Photo Album",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: _itemList!.length,
+                itemBuilder: (context, index) {
+                  var todoItem = _itemList![index];
+                  return Card(
+                      child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(children: [
-                      Expanded(child: Text(todoItem.title)),
-                      Checkbox(
-                          value: todoItem.completed,
-                          onChanged: (newValue) {
-                            setState(() {
-                              todoItem.completed = newValue!;
-                            });
-                          })
-                    ])));
-          });
+                    child: Column(children: [
+                      Row(
+                        children: [
+                          Text(
+                            todoItem.title,
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Card(
+                            color: Colors.pink.shade100,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(
+                                'Album ID' + todoItem.id.toString(),
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ),
+                          Card(
+                            color: Colors.lightBlue.shade100,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(
+                                'User ID' + todoItem.userId.toString(),
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ]),
+                  ));
+                }),
+          )
+        ],
+      );
     }
 
     return Scaffold(body: body);
